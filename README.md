@@ -1,3 +1,5 @@
+[![Better Stack Badge](https://uptime.betterstack.com/status-badges/v1/monitor/wm9t.svg)](https://status.languagexchange.net)
+
 # API Server
 
 This project is a Node.js application. Before you can run it, you need to set up your environment.
