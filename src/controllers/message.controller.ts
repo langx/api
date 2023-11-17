@@ -16,6 +16,7 @@ const env: any = {
   API_KEY: process.env.API_KEY as string,
   APP_DATABASE: process.env.APP_DATABASE as string,
   MESSAGES_COLLECTION: process.env.MESSAGES_COLLECTION as string,
+  ROOMS_COLLECTION: process.env.ROOMS_COLLECTION as string,
 };
 
 export default class MessageController {
@@ -82,7 +83,7 @@ export default class MessageController {
           env.APP_DATABASE,
           env.ROOMS_COLLECTION,
           roomId,
-          { lastMessageId: message?.$id }
+          { $updatedAt: Date.now() }
         );
         room?.$id
           ? console.log("room updated")
