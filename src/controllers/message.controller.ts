@@ -75,21 +75,23 @@ export default class MessageController {
         ]
       );
 
-      message?.$id
-        ? console.log("message created")
-        : console.log("message not created");
-
-      // Update room $updatedAt
-      let room = await database.updateDocument(
-        env.APP_DATABASE,
-        env.ROOMS_COLLECTION,
-        roomId,
-        { $updatedAt: Date.now() }
-      );
-
-      room?.$id ? console.log("room updated") : console.log("room not updated");
-
-      res.status(201).json(message);
+      if (message?.$id) {
+        console.log("message created");
+        // Update room $updatedAt
+        let room = await database.updateDocument(
+          env.APP_DATABASE,
+          env.ROOMS_COLLECTION,
+          roomId,
+          { lastMessageId: message?.$id }
+        );
+        room?.$id
+          ? console.log("room updated")
+          : console.log("room not updated");
+        res.status(201).json(message);
+      } else {
+        console.log("message not created");
+        res.status(304).json({ message: "Not Modified" });
+      }
     } catch (err) {
       res.status(500).json({
         message: "Internal Server Error!",
