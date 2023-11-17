@@ -1,5 +1,5 @@
-import { Request, Response } from 'express';
-import { throwIfMissing } from '../utils/utils';
+import { Request, Response } from "express";
+import { throwIfMissing } from "../utils/utils";
 import {
   Client,
   Databases,
@@ -7,8 +7,8 @@ import {
   ID,
   Permission,
   Role,
-} from 'node-appwrite';
-import 'dotenv/config';
+} from "node-appwrite";
+import "dotenv/config";
 
 const env: any = {
   APP_ENDPOINT: process.env.APP_ENDPOINT as string,
@@ -21,10 +21,10 @@ const env: any = {
 export default class MessageController {
   async create(req: Request, res: Response) {
     try {
-      throwIfMissing(req.headers, ['x-appwrite-user-id', 'x-appwrite-jwt']);
-      throwIfMissing(req.body, ['to', 'body', 'roomId']);
-      const sender: string = req.headers['x-appwrite-user-id'] as string;
-      const jwt: string = req.headers['x-appwrite-jwt'] as string;
+      throwIfMissing(req.headers, ["x-appwrite-user-id", "x-appwrite-jwt"]);
+      throwIfMissing(req.body, ["to", "body", "roomId"]);
+      const sender: string = req.headers["x-appwrite-user-id"] as string;
+      const jwt: string = req.headers["x-appwrite-jwt"] as string;
       const to: string = req.body.to;
       const body: string = req.body.body;
       const roomId: string = req.body.roomId;
@@ -45,10 +45,10 @@ export default class MessageController {
       // console.log(`user: ${JSON.stringify(user)}`);
 
       if (user.$id === sender) {
-        console.log('jwt is valid');
+        console.log("jwt is valid");
       } else {
-        console.log('jwt is invalid');
-        return res.status(400).json({ ok: false, error: 'jwt is invalid' });
+        console.log("jwt is invalid");
+        return res.status(400).json({ ok: false, error: "jwt is invalid" });
       }
 
       const client = new Client()
@@ -76,13 +76,23 @@ export default class MessageController {
       );
 
       message?.$id
-        ? console.log('message created')
-        : console.log('message not created');
+        ? console.log("message created")
+        : console.log("message not created");
+
+      // Update room $updatedAt
+      let room = await database.updateDocument(
+        env.APP_DATABASE,
+        env.ROOMS_COLLECTION,
+        roomId,
+        { $updatedAt: Date.now() }
+      );
+
+      room?.$id ? console.log("room updated") : console.log("room not updated");
 
       res.status(201).json(message);
     } catch (err) {
       res.status(500).json({
-        message: 'Internal Server Error!',
+        message: "Internal Server Error!",
         err: err,
       });
     }
