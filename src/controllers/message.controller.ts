@@ -23,7 +23,7 @@ export default class MessageController {
   async create(req: Request, res: Response) {
     try {
       throwIfMissing(req.headers, ["x-appwrite-user-id", "x-appwrite-jwt"]);
-      throwIfMissing(req.body, ["to", "body", "roomId", "isImage"]);
+      throwIfMissing(req.body, ["to", "body", "roomId"]);
       const sender: string = req.headers["x-appwrite-user-id"] as string;
       const jwt: string = req.headers["x-appwrite-jwt"] as string;
 
@@ -42,6 +42,7 @@ export default class MessageController {
       // console.log(typeof req.headers['x-appwrite-jwt'], jwt);
       // console.log(typeof req.headers['x-appwrite-user-id'], sender);
       // console.log(typeof to, to);
+      // console.log(typeof isImage, isImage);
 
       // Check JWT
       const verifyUser = new Client()
@@ -74,6 +75,7 @@ export default class MessageController {
         roomId: roomId,
         body: body,
         isImage: isImage,
+        seen: false,
         image: null,
       };
 
