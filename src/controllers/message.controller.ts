@@ -23,19 +23,19 @@ export default class MessageController {
   async create(req: Request, res: Response) {
     try {
       throwIfMissing(req.headers, ["x-appwrite-user-id", "x-appwrite-jwt"]);
-      throwIfMissing(req.body, ["to", "body", "roomId"]);
+      throwIfMissing(req.body, ["to", "roomId"]);
       const sender: string = req.headers["x-appwrite-user-id"] as string;
       const jwt: string = req.headers["x-appwrite-jwt"] as string;
 
       // Set data to variables
       const to: string = req.body.to;
-      const body: string = req.body.body;
       const roomId: string = req.body.roomId;
       const isImage: boolean = req.body.isImage;
 
-      if (req.body.isImage) {
+      if (isImage) {
         throwIfMissing(req.body, ["image"]);
-        const image: string = req.body.image;
+      } else {
+        throwIfMissing(req.body, ["body"]);
       }
 
       // Logs
@@ -73,16 +73,21 @@ export default class MessageController {
         sender: sender,
         to: to,
         roomId: roomId,
-        body: body,
         isImage: isImage,
         seen: false,
         image: null,
+        body: null,
       };
 
       if (isImage) {
         messageData = {
           ...messageData,
           image: req.body.image,
+        };
+      } else {
+        messageData = {
+          ...messageData,
+          body: req.body.body,
         };
       }
 
