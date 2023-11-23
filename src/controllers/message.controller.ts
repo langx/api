@@ -23,12 +23,20 @@ export default class MessageController {
   async create(req: Request, res: Response) {
     try {
       throwIfMissing(req.headers, ["x-appwrite-user-id", "x-appwrite-jwt"]);
-      throwIfMissing(req.body, ["to", "body", "roomId"]);
+      throwIfMissing(req.body, ["to", "body", "roomId", "isImage"]);
       const sender: string = req.headers["x-appwrite-user-id"] as string;
       const jwt: string = req.headers["x-appwrite-jwt"] as string;
+
+      // Set data to variables
       const to: string = req.body.to;
       const body: string = req.body.body;
       const roomId: string = req.body.roomId;
+      const isImage: boolean = req.body.isImage;
+
+      if (req.body.isImage) {
+        throwIfMissing(req.body, ["image"]);
+        const image: string = req.body.image;
+      }
 
       // Logs
       // console.log(typeof req.headers['x-appwrite-jwt'], jwt);
@@ -60,7 +68,21 @@ export default class MessageController {
       const database = new Databases(client);
 
       // Create a message
-      let messageData = { sender: sender, to: to, roomId: roomId, body: body };
+      let messageData = {
+        sender: sender,
+        to: to,
+        roomId: roomId,
+        body: body,
+        isImage: isImage,
+        image: null,
+      };
+
+      if (isImage) {
+        messageData = {
+          ...messageData,
+          image: req.body.image,
+        };
+      }
 
       // Create document
       let message = await database.createDocument(
