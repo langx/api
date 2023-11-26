@@ -23,26 +23,40 @@ export default class MessageController {
   async create(req: Request, res: Response) {
     try {
       throwIfMissing(req.headers, ["x-appwrite-user-id", "x-appwrite-jwt"]);
-      throwIfMissing(req.body, ["to", "roomId"]);
+      throwIfMissing(req.body, ["to", "roomId", "type"]);
       const sender: string = req.headers["x-appwrite-user-id"] as string;
       const jwt: string = req.headers["x-appwrite-jwt"] as string;
 
       // Set data to variables
       const to: string = req.body.to;
       const roomId: string = req.body.roomId;
-      const isImage: boolean = req.body.isImage;
+      const type: string = req.body.type;
 
-      if (isImage) {
-        throwIfMissing(req.body, ["image"]);
-      } else {
-        throwIfMissing(req.body, ["body"]);
+      switch (type) {
+        case "body":
+          throwIfMissing(req.body, ["body"]);
+          break;
+        case "image":
+          throwIfMissing(req.body, ["image"]);
+          break;
+        case "audio":
+          throwIfMissing(req.body, ["audio"]);
+          break;
+        default:
+          // Send error response
+          res.status(400).json({
+            ok: false,
+            error: "type is not valid",
+          });
+          break;
       }
 
       // Logs
-      // console.log(typeof req.headers['x-appwrite-jwt'], jwt);
-      // console.log(typeof req.headers['x-appwrite-user-id'], sender);
-      // console.log(typeof to, to);
-      // console.log(typeof isImage, isImage);
+      console.log(typeof req.headers["x-appwrite-jwt"], jwt);
+      console.log(typeof req.headers["x-appwrite-user-id"], sender);
+
+      console.log(typeof to, to);
+      console.log(typeof type, type);
 
       // Check JWT
       const verifyUser = new Client()
@@ -73,23 +87,42 @@ export default class MessageController {
         sender: sender,
         to: to,
         roomId: roomId,
-        isImage: isImage,
         seen: false,
-        image: null,
+        type: type,
         body: null,
+        image: null,
+        audio: null,
       };
 
-      if (isImage) {
-        messageData = {
-          ...messageData,
-          image: req.body.image,
-        };
-      } else {
-        messageData = {
-          ...messageData,
-          body: req.body.body,
-        };
+      switch (type) {
+        case "body":
+          messageData = {
+            ...messageData,
+            body: req.body.body,
+          };
+          break;
+        case "image":
+          messageData = {
+            ...messageData,
+            image: req.body.image,
+          };
+          break;
+        case "audio":
+          messageData = {
+            ...messageData,
+            audio: req.body.audio,
+          };
+          break;
+        default:
+          // Send error response
+          res.status(400).json({
+            ok: false,
+            error: "type is not valid",
+          });
+          break;
       }
+
+      console.log(`messageData: ${JSON.stringify(messageData)}`);
 
       // Create document
       let message = await database.createDocument(
@@ -105,6 +138,8 @@ export default class MessageController {
           Permission.delete(Role.user(sender)),
         ]
       );
+
+      console.log(`message: ${JSON.stringify(message)}`);
 
       if (message?.$id) {
         console.log("message created");
