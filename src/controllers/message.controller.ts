@@ -1,20 +1,15 @@
 import { Request, Response } from "express";
-import { throwIfMissing } from "../utils/utils";
-import {
-  Client,
-  Databases,
-  Account,
-  ID,
-  Permission,
-  Role,
-} from "node-appwrite";
 import "dotenv/config";
+import { Client, Databases, Account, Permission, Role } from "node-appwrite";
+
+// Utils
+import { throwIfMissing } from "../utils/utils";
 
 const env: any = {
   APP_ENDPOINT: process.env.APP_ENDPOINT as string,
   APP_PROJECT: process.env.APP_PROJECT as string,
-  API_KEY: process.env.API_KEY as string,
   APP_DATABASE: process.env.APP_DATABASE as string,
+  API_KEY: process.env.API_KEY as string,
   MESSAGES_COLLECTION: process.env.MESSAGES_COLLECTION as string,
   ROOMS_COLLECTION: process.env.ROOMS_COLLECTION as string,
 };
@@ -23,11 +18,12 @@ export default class MessageController {
   async create(req: Request, res: Response) {
     try {
       throwIfMissing(req.headers, ["x-appwrite-user-id", "x-appwrite-jwt"]);
-      throwIfMissing(req.body, ["to", "roomId", "type"]);
+      throwIfMissing(req.body, ["$id", "to", "roomId", "type"]);
       const sender: string = req.headers["x-appwrite-user-id"] as string;
       const jwt: string = req.headers["x-appwrite-jwt"] as string;
 
       // Set data to variables
+      const $id: string = req.body.$id;
       const to: string = req.body.to;
       const roomId: string = req.body.roomId;
       const type: string = req.body.type;
@@ -128,7 +124,7 @@ export default class MessageController {
       let message = await database.createDocument(
         env.APP_DATABASE,
         env.MESSAGES_COLLECTION,
-        ID.unique(),
+        $id,
         messageData,
         [
           Permission.read(Role.user(to)),
