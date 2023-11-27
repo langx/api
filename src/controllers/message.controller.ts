@@ -48,11 +48,12 @@ export default class MessageController {
       }
 
       // Logs
-      console.log(typeof req.headers["x-appwrite-jwt"], jwt);
-      console.log(typeof req.headers["x-appwrite-user-id"], sender);
+      // console.log(typeof req.headers["x-appwrite-jwt"], jwt);
+      // console.log(typeof req.headers["x-appwrite-user-id"], sender);
 
-      console.log(typeof to, to);
-      console.log(typeof type, type);
+      // console.log(typeof $id, $id);
+      // console.log(typeof to, to);
+      // console.log(typeof type, type);
 
       // Check JWT
       const verifyUser = new Client()
@@ -65,9 +66,6 @@ export default class MessageController {
       // console.log(`user: ${JSON.stringify(user)}`);
 
       if (user.$id === sender) {
-        console.log("jwt is valid");
-      } else {
-        console.log("jwt is invalid");
         return res.status(400).json({ ok: false, error: "jwt is invalid" });
       }
 
@@ -118,7 +116,7 @@ export default class MessageController {
           break;
       }
 
-      console.log(`messageData: ${JSON.stringify(messageData)}`);
+      // console.log(`messageData: ${JSON.stringify(messageData)}`);
 
       // Create document
       let message = await database.createDocument(
@@ -135,7 +133,7 @@ export default class MessageController {
         ]
       );
 
-      console.log(`message: ${JSON.stringify(message)}`);
+      // console.log(`message: ${JSON.stringify(message)}`);
 
       if (message?.$id) {
         console.log("message created");
