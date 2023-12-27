@@ -1,5 +1,5 @@
-import { Router } from 'express';
-import OAuth2Controller from '../controllers/oauth2.controller';
+import { Router } from "express";
+import OAuth2Controller from "../controllers/oauth2.controller";
 
 class oauth2Routes {
   router = Router();
@@ -10,7 +10,7 @@ class oauth2Routes {
   }
 
   intializeRoutes() {
-    this.router.post('/', this.controller.create);
+    this.router.get("/", this.controller.redirect);
   }
 }
 
