@@ -9,7 +9,6 @@ export default class Server {
   }
 
   private config(app: Application): void {
-    // TODO: !IMPORTANT! Change this to your Angular app URL
     const corsOptions: CorsOptions = {
       origin: "https://app.languagexchange.net",
     };
