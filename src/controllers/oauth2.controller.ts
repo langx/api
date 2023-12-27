@@ -12,6 +12,7 @@ const env: any = {
 export default class OAuth2Controller {
   async redirect(req: Request, res: Response) {
     console.log("req.headers: ", req.headers);
+    console.log("req", req);
 
     res.end("processing...");
   }
