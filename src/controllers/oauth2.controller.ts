@@ -7,6 +7,6 @@ export default class OAuth2Controller {
     console.log("req.body: ", req.body);
     console.log("req.headers: ", req.headers);
 
-    console.log("res: ", res);
+    res.end("processing...");
   }
 }
