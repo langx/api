@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import * as https from "https";
+import axios from "axios";
+import https from "https";
 import "dotenv/config";
 
 import { throwIfMissing } from "../utils/utils";
@@ -25,27 +26,25 @@ export default class OAuth2Controller {
       path: "/v1/account/sessions/oauth2/callback/google/650750d21e4a6a589be3",
       method: "GET",
       headers: req.headers,
-      rejectUnauthorized: false,
     };
 
-    const request = https.request(options, (response) => {
-      let data = "";
-
-      response.on("data", (chunk) => {
-        data += chunk;
-      });
-
-      response.on("end", () => {
-        console.log(data);
-        res.send(data);
-      });
+    const agent = new https.Agent({
+      rejectUnauthorized: false,
     });
 
-    request.on("error", (error) => {
+    try {
+      const response = await axios({
+        url: `https://${options.hostname}${options.path}`,
+        method: options.method,
+        headers: options.headers,
+        httpsAgent: agent,
+      });
+
+      console.log(response.data);
+      res.send(response.data);
+    } catch (error) {
       console.error(error);
       res.send(error);
-    });
-
-    request.end();
+    }
   }
 }
