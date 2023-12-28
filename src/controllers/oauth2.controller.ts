@@ -30,22 +30,15 @@ export default class OAuth2Controller {
 
     const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
-    try {
-      // const response = await axios(clonedReq, { httpsAgent });
-      const response = await axios.get(clonedReq.url, {
-        headers: clonedReq.headers,
-        params: clonedReq.params,
-        httpsAgent,
-      });
+    const response = await axios.get(clonedReq.url, {
+      headers: clonedReq.headers,
+      params: clonedReq.params,
+      httpsAgent,
+    });
 
-      console.log("----------------------");
-      console.log(response);
-      console.log(response.data);
-      res.send(response.data);
-    } catch (error) {
-      console.error(error);
-      res.send(error);
-    }
+    console.log("----------------------");
+    console.log(response);
+    res.send(response.data);
 
     res.end("processing...");
   }
