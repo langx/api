@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import * as https from "https";
-import axios from "axios";
 import "dotenv/config";
 
 import { throwIfMissing } from "../utils/utils";
@@ -21,25 +20,31 @@ export default class OAuth2Controller {
     console.log("req.body", req.body);
     console.log("req.query", req.query);
 
-    const clonedReq = {
-      method: "get",
-      url: "https://db.languagexchange.net/v1/account/sessions/oauth2/callback/google/650750d21e4a6a589be3",
+    const options = {
+      hostname: "db.languagexchange.net",
+      path: "/v1/account/sessions/oauth2/callback/google/650750d21e4a6a589be3",
+      method: "GET",
       headers: req.headers,
-      params: req.query,
     };
 
-    const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+    const request = https.request(options, (response) => {
+      let data = "";
 
-    const response = await axios.get(clonedReq.url, {
-      headers: clonedReq.headers,
-      params: clonedReq.params,
-      httpsAgent,
+      response.on("data", (chunk) => {
+        data += chunk;
+      });
+
+      response.on("end", () => {
+        console.log(data);
+        res.send(data);
+      });
     });
 
-    console.log("----------------------");
-    console.log(response);
-    res.send(response.data);
+    request.on("error", (error) => {
+      console.error(error);
+      res.send(error);
+    });
 
-    res.end("processing...");
+    request.end();
   }
 }
