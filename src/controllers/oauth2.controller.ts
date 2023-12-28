@@ -41,8 +41,10 @@ export default class OAuth2Controller {
       console.log("----------------------");
       console.log(response);
       console.log(response.data);
+      res.send(response.data);
     } catch (error) {
       console.error(error);
+      res.json(error);
     }
 
     res.end("processing...");
