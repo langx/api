@@ -25,6 +25,7 @@ export default class OAuth2Controller {
       path: "/v1/account/sessions/oauth2/callback/google/650750d21e4a6a589be3",
       method: "GET",
       headers: req.headers,
+      rejectUnauthorized: false,
     };
 
     const request = https.request(options, (response) => {
