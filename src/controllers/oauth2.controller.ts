@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import * as https from "https";
 import axios from "axios";
 import "dotenv/config";
 
@@ -27,8 +28,18 @@ export default class OAuth2Controller {
       params: req.query,
     };
 
+    const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+
     try {
-      const response = await axios(clonedReq);
+      // const response = await axios(clonedReq, { httpsAgent });
+      const response = await axios.get(clonedReq.url, {
+        headers: clonedReq.headers,
+        params: clonedReq.params,
+        httpsAgent,
+      });
+
+      console.log("----------------------");
+      console.log(response);
       console.log(response.data);
     } catch (error) {
       console.error(error);
