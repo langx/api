@@ -25,6 +25,7 @@ export default class OAuth2Controller {
       hostname: "db.languagexchange.net",
       path: "/v1/account/sessions/oauth2/callback/google/650750d21e4a6a589be3",
       method: "GET",
+      query: req.query,
       headers: {
         Accept:
           "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
