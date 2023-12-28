@@ -38,7 +38,7 @@ export default class OAuth2Controller {
         method: options.method,
         headers: options.headers,
         httpsAgent: agent,
-        maxRedirects: 5,
+        maxRedirects: 0,
       });
 
       console.log(response.data);
