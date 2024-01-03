@@ -65,7 +65,7 @@ export default class MessageController {
       const user = await account.get();
       // console.log(`user: ${JSON.stringify(user)}`);
 
-      if (user.$id === sender) {
+      if (user.$id !== sender) {
         return res.status(400).json({ ok: false, error: "jwt is invalid" });
       }
 
