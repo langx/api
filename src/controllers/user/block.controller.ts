@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, query } from "express";
 import { throwIfMissing } from "../../utils/utils";
 import {
   Client,
@@ -7,6 +7,7 @@ import {
   ID,
   Permission,
   Role,
+  Query,
 } from "node-appwrite";
 import "dotenv/config";
 
@@ -20,64 +21,73 @@ const env: any = {
 
 export default class BlockController {
   async create(req: Request, res: Response) {
-    res.send("create block");
-    // try {
-    //   throwIfMissing(req.headers, ['x-appwrite-user-id', 'x-appwrite-jwt']);
-    //   throwIfMissing(req.body, ['to']);
-    //   const sender: string = req.headers['x-appwrite-user-id'] as string;
-    //   const jwt: string = req.headers['x-appwrite-jwt'] as string;
-    //   const to: string = req.body.to;
+    try {
+      throwIfMissing(req.headers, ["x-appwrite-user-id", "x-appwrite-jwt"]);
+      throwIfMissing(req.body, ["to"]);
+      const sender: string = req.headers["x-appwrite-user-id"] as string;
+      const jwt: string = req.headers["x-appwrite-jwt"] as string;
+      const to: string = req.body.to;
 
-    //   // Logs
-    //   // console.log(typeof req.headers['x-appwrite-jwt'], jwt);
-    //   // console.log(typeof req.headers['x-appwrite-user-id'], sender);
-    //   // console.log(typeof to, to);
+      // Logs
+      console.log(typeof req.headers["x-appwrite-jwt"], jwt);
+      console.log(typeof req.headers["x-appwrite-user-id"], sender);
+      console.log(typeof to, to);
 
-    //   // Check JWT
-    //   const verifyUser = new Client()
-    //     .setEndpoint(env.APP_ENDPOINT)
-    //     .setProject(env.APP_PROJECT)
-    //     .setJWT(jwt);
+      // Check JWT
+      const verifyUser = new Client()
+        .setEndpoint(env.APP_ENDPOINT)
+        .setProject(env.APP_PROJECT)
+        .setJWT(jwt);
 
-    //   const account = new Account(verifyUser);
-    //   const user = await account.get();
-    //   // console.log(`user: ${JSON.stringify(user)}`);
+      const account = new Account(verifyUser);
+      const user = await account.get();
+      // console.log(`user: ${JSON.stringify(user)}`);
 
-    //   if (user.$id === sender) {
-    //     console.log('jwt is valid');
-    //   } else {
-    //     console.log('jwt is invalid');
-    //     return res.status(400).json({ ok: false, error: 'jwt is invalid' });
-    //   }
+      if (user.$id !== sender) {
+        return res.status(400).json({ ok: false, error: "jwt is invalid" });
+      }
 
-    //   // Create client for DB
-    //   const client = new Client()
-    //     .setEndpoint(env.APP_ENDPOINT)
-    //     .setProject(env.APP_PROJECT)
-    //     .setKey(env.API_KEY);
+      // Create client for DB
+      const client = new Client()
+        .setEndpoint(env.APP_ENDPOINT)
+        .setProject(env.APP_PROJECT)
+        .setKey(env.API_KEY);
 
-    //   const database = new Databases(client);
+      const database = new Databases(client);
 
-    //   // Create a room
-    //   let roomData = { users: [sender, to] };
+      const queries: any[] = [];
 
-    //   // Create document
-    //   let room = await database.createDocument(
-    //     env.APP_DATABASE,
-    //     env.ROOMS_COLLECTION,
-    //     ID.unique(),
-    //     roomData,
-    //     [Permission.read(Role.user(sender)), Permission.read(Role.user(to))]
-    //   );
+      // Query for rooms, user attribute that contain current user and userId
+      queries.push(Query.search("users", sender));
+      queries.push(Query.search("users", to));
 
-    //   room?.$id ? console.log('room created') : console.log('room not created');
+      // Create document
+      let rooms = await database.listDocuments(
+        env.APP_DATABASE,
+        env.ROOMS_COLLECTION,
+        queries
+      );
 
-    //   res.status(201).json(room);
-    // } catch (err) {
-    //   res.status(500).json({
-    //     message: 'Internal Server Error!',
-    //     err: err,
-    //   });
-    // }
+      if (rooms.total > 0) {
+        const room = rooms.documents[0];
+        console.log("room found", room);
+        const updatedRoom = await database.updateDocument(
+          env.APP_DATABASE,
+          env.ROOMS_COLLECTION,
+          room.$id,
+          undefined,
+          []
+        );
+        console.log("room updated", updatedRoom);
+        res.status(201).json({ ok: true, message: "Room updated" });
+      } else {
+        res.status(200).json({ ok: true, message: "No rooms found" });
+      }
+    } catch (err) {
+      res.status(500).json({
+        message: "Internal Server Error!",
+        err: err,
+      });
+    }
   }
 }
