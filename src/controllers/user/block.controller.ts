@@ -1,14 +1,6 @@
-import { Request, Response, query } from "express";
+import { Request, Response } from "express";
 import { throwIfMissing } from "../../utils/utils";
-import {
-  Client,
-  Databases,
-  Account,
-  ID,
-  Permission,
-  Role,
-  Query,
-} from "node-appwrite";
+import { Client, Databases, Account, Query } from "node-appwrite";
 import "dotenv/config";
 
 const env: any = {
