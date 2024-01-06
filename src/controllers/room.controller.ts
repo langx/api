@@ -1,5 +1,5 @@
-import { Request, Response } from 'express';
-import { throwIfMissing } from '../utils/utils';
+import { Request, Response } from "express";
+import { throwIfMissing } from "../utils/utils";
 import {
   Client,
   Databases,
@@ -7,8 +7,8 @@ import {
   ID,
   Permission,
   Role,
-} from 'node-appwrite';
-import 'dotenv/config';
+} from "node-appwrite";
+import "dotenv/config";
 
 const env: any = {
   APP_ENDPOINT: process.env.APP_ENDPOINT as string,
@@ -21,10 +21,10 @@ const env: any = {
 export default class RoomController {
   async create(req: Request, res: Response) {
     try {
-      throwIfMissing(req.headers, ['x-appwrite-user-id', 'x-appwrite-jwt']);
-      throwIfMissing(req.body, ['to']);
-      const sender: string = req.headers['x-appwrite-user-id'] as string;
-      const jwt: string = req.headers['x-appwrite-jwt'] as string;
+      throwIfMissing(req.headers, ["x-appwrite-user-id", "x-appwrite-jwt"]);
+      throwIfMissing(req.body, ["to"]);
+      const sender: string = req.headers["x-appwrite-user-id"] as string;
+      const jwt: string = req.headers["x-appwrite-jwt"] as string;
       const to: string = req.body.to;
 
       // Logs
@@ -42,11 +42,8 @@ export default class RoomController {
       const user = await account.get();
       // console.log(`user: ${JSON.stringify(user)}`);
 
-      if (user.$id === sender) {
-        console.log('jwt is valid');
-      } else {
-        console.log('jwt is invalid');
-        return res.status(400).json({ ok: false, error: 'jwt is invalid' });
+      if (user.$id !== sender) {
+        return res.status(400).json({ ok: false, error: "jwt is invalid" });
       }
 
       // Create client for DB
@@ -69,12 +66,12 @@ export default class RoomController {
         [Permission.read(Role.user(sender)), Permission.read(Role.user(to))]
       );
 
-      room?.$id ? console.log('room created') : console.log('room not created');
+      room?.$id ? console.log("room created") : console.log("room not created");
 
       res.status(201).json(room);
     } catch (err) {
       res.status(500).json({
-        message: 'Internal Server Error!',
+        message: "Internal Server Error!",
         err: err,
       });
     }
