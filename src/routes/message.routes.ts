@@ -10,7 +10,6 @@ class MessageRoutes {
   }
 
   intializeRoutes() {
-    // Create a new Tutorial
     this.router.post('/', this.controller.create);
   }
 }
