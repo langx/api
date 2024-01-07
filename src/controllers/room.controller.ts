@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { throwIfMissing } from "../utils/utils";
+import "dotenv/config";
 import {
   Client,
   Databases,
@@ -7,16 +8,21 @@ import {
   ID,
   Permission,
   Role,
+  Models,
 } from "node-appwrite";
-import "dotenv/config";
 
 const env: any = {
   APP_ENDPOINT: process.env.APP_ENDPOINT as string,
   APP_PROJECT: process.env.APP_PROJECT as string,
   API_KEY: process.env.API_KEY as string,
   APP_DATABASE: process.env.APP_DATABASE as string,
+  USERS_COLLECTION: process.env.USERS_COLLECTION as string,
   ROOMS_COLLECTION: process.env.ROOMS_COLLECTION as string,
 };
+
+interface UserDocument extends Models.Document {
+  blockedUsers?: string[];
+}
 
 export default class RoomController {
   async create(req: Request, res: Response) {
@@ -53,6 +59,41 @@ export default class RoomController {
         .setKey(env.API_KEY);
 
       const database = new Databases(client);
+
+      database
+        .getDocument(env.APP_DATABASE, env.USERS_COLLECTION, sender)
+        .then((doc) => {
+          console.log(`doc: ${JSON.stringify(doc)}`);
+        })
+        .catch((err) => {
+          console.log(`err: ${JSON.stringify(err)}`);
+        });
+
+      // Check user blocked or not
+      const currentUserDoc = (await database.getDocument(
+        env.APP_DATABASE,
+        env.USERS_COLLECTION,
+        sender
+      )) as UserDocument;
+
+      const userDoc = (await database.getDocument(
+        env.APP_DATABASE,
+        env.USERS_COLLECTION,
+        to
+      )) as UserDocument;
+
+      // console.log(`currentUserDoc: ${JSON.stringify(currentUserDoc)}`);
+      // console.log(`userDoc: ${JSON.stringify(userDoc)}`);
+
+      if (currentUserDoc?.blockedUsers?.includes(to)) {
+        res.status(403).json({ message: "You block the user." });
+        return;
+      }
+
+      if (userDoc?.blockedUsers?.includes(sender)) {
+        res.status(403).json({ message: "You have been blocked." });
+        return;
+      }
 
       // Create a room
       let roomData = { users: [sender, to] };
