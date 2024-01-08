@@ -60,15 +60,6 @@ export default class RoomController {
 
       const database = new Databases(client);
 
-      database
-        .getDocument(env.APP_DATABASE, env.USERS_COLLECTION, sender)
-        .then((doc) => {
-          console.log(`doc: ${JSON.stringify(doc)}`);
-        })
-        .catch((err) => {
-          console.log(`err: ${JSON.stringify(err)}`);
-        });
-
       // Check user blocked or not
       const currentUserDoc = (await database.getDocument(
         env.APP_DATABASE,
