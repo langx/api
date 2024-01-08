@@ -105,12 +105,14 @@ export default class MessageController {
       // console.log(`userDoc: ${JSON.stringify(userDoc)}`);
 
       if (currentUserDoc?.blockedUsers?.includes(to)) {
-        res.status(403).json({ message: "You block the user." });
+        res.status(403).json({ message: "You have blocked this user." });
         return;
       }
 
       if (userDoc?.blockedUsers?.includes(sender)) {
-        res.status(403).json({ message: "You have been blocked." });
+        res
+          .status(403)
+          .json({ message: "You have been blocked by this user." });
         return;
       }
 
