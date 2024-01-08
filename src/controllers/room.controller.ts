@@ -34,9 +34,9 @@ export default class RoomController {
       const to: string = req.body.to;
 
       // Logs
-      console.log(typeof jwt, "jwt:", jwt);
-      console.log(typeof to, "to:", to);
-      console.log(typeof sender, "sender:", sender);
+      // console.log(typeof jwt, "jwt:", jwt);
+      // console.log(typeof to, "to:", to);
+      // console.log(typeof sender, "sender:", sender);
 
       // Check JWT
       const verifyUser = new Client()
@@ -46,7 +46,7 @@ export default class RoomController {
 
       const account = new Account(verifyUser);
       const user = await account.get();
-      console.log(`user: ${JSON.stringify(user)}`);
+      // console.log(`user: ${JSON.stringify(user)}`);
 
       if (user.$id !== sender) {
         return res.status(400).json({ ok: false, error: "jwt is invalid" });
@@ -59,8 +59,6 @@ export default class RoomController {
         .setKey(env.API_KEY);
 
       const database = new Databases(client);
-
-      console.log(env.APP_DATABASE, env.USERS_COLLECTION, sender, to);
 
       // Check user blocked or not
       const currentUserDoc = (await database.getDocument(
@@ -75,8 +73,8 @@ export default class RoomController {
         to
       )) as UserDocument;
 
-      console.log(`currentUserDoc: ${JSON.stringify(currentUserDoc)}`);
-      console.log(`userDoc: ${JSON.stringify(userDoc)}`);
+      // console.log(`currentUserDoc: ${JSON.stringify(currentUserDoc)}`);
+      // console.log(`userDoc: ${JSON.stringify(userDoc)}`);
 
       if (currentUserDoc?.blockedUsers?.includes(to)) {
         res.status(403).json({ message: "You block the user." });
