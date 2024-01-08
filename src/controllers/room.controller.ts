@@ -34,9 +34,9 @@ export default class RoomController {
       const to: string = req.body.to;
 
       // Logs
-      // console.log(typeof req.headers['x-appwrite-jwt'], jwt);
-      // console.log(typeof req.headers['x-appwrite-user-id'], sender);
-      // console.log(typeof to, to);
+      console.log(typeof req.headers['x-appwrite-jwt'], jwt);
+      console.log(typeof req.headers['x-appwrite-user-id'], sender);
+      console.log(typeof to, to);
 
       // Check JWT
       const verifyUser = new Client()
@@ -82,8 +82,8 @@ export default class RoomController {
         to
       )) as UserDocument;
 
-      // console.log(`currentUserDoc: ${JSON.stringify(currentUserDoc)}`);
-      // console.log(`userDoc: ${JSON.stringify(userDoc)}`);
+      console.log(`currentUserDoc: ${JSON.stringify(currentUserDoc)}`);
+      console.log(`userDoc: ${JSON.stringify(userDoc)}`);
 
       if (currentUserDoc?.blockedUsers?.includes(to)) {
         res.status(403).json({ message: "You block the user." });
