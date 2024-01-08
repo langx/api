@@ -34,9 +34,9 @@ export default class RoomController {
       const to: string = req.body.to;
 
       // Logs
-      console.log(typeof req.headers['x-appwrite-jwt'], jwt);
-      console.log(typeof req.headers['x-appwrite-user-id'], sender);
-      console.log(typeof to, to);
+      console.log(typeof jwt, "jwt:", jwt);
+      console.log(typeof to, "to:", to);
+      console.log(typeof sender, "sender:", sender);
 
       // Check JWT
       const verifyUser = new Client()
