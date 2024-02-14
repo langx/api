@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint . --ext .ts",
     "build": "tsc",
-    "dev": "node ./dist/server.js",
+    "dev": "nodemon ./dist/server.js",
     "start": "tsc && npm run dev"
   },
   "author": "",
