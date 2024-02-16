@@ -39,7 +39,7 @@ export default class MessageController {
       const to: string = req.body.to;
       const roomId: string = req.body.roomId;
       const type: string = req.body.type;
-      const replyTo: string = req.body.reply || null;
+      const replyTo: string = req.body.replyTo || null;
 
       switch (type) {
         case "body":
