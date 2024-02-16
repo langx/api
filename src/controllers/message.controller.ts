@@ -39,6 +39,7 @@ export default class MessageController {
       const to: string = req.body.to;
       const roomId: string = req.body.roomId;
       const type: string = req.body.type;
+      const reply: string = req.body.reply || null;
 
       switch (type) {
         case "body":
@@ -121,6 +122,7 @@ export default class MessageController {
         sender: sender,
         to: to,
         roomId: roomId,
+        reply: reply,
         seen: false,
         type: type,
         body: null,
