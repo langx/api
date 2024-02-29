@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { throwIfMissing } from "../utils/utils";
 import "dotenv/config";
 import {
   Client,
@@ -10,6 +9,9 @@ import {
   Role,
   Models,
 } from "node-appwrite";
+
+// Utils
+import { throwIfMissing } from "../utils/utils";
 
 const env: any = {
   APP_ENDPOINT: process.env.APP_ENDPOINT as string,
