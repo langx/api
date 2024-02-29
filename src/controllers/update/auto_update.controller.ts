@@ -29,7 +29,7 @@ export default class RoomController {
         "plugin_version",
       ]);
 
-      const {
+      let {
         platform,
         app_id,
         version_os,
@@ -39,22 +39,32 @@ export default class RoomController {
         plugin_version,
         is_prod,
       } = req.body;
+      version_name += "v" + version_name;
 
-      if (version_name === "0.5.16") {
+      // Fetch the latest release from the GitHub API
+      const response = await fetch(
+        "https://api.github.com/repos/languageXchange/languageXchange/releases/latest"
+      );
+      const data = await response.json();
+
+      // Extract the version and zipball_url from the response
+      const latestVersion = data.tag_name;
+      const latestUrl = data.zipball_url;
+
+      console.log("appVersion", version_name);
+      console.log("latestVersion", latestVersion);
+
+      if (version_name === latestVersion) {
         return res.json({
-          version: "0.5.17",
-          url: "https://github.com/languageXchange/languageXchange/archive/refs/tags/v0.5.17.zip",
-        });
-      } else if (version_name === "0.5.17") {
-        return res.json({
-          version: "0.5.17",
-          url: "https://github.com/languageXchange/languageXchange/archive/refs/tags/v0.5.18.zip",
+          message: "You're up to date!",
+          version: "",
+          url: "",
         });
       } else {
         return res.json({
-          message: "Error version not found",
-          version: "",
-          url: "",
+          message: "New version available",
+          version: latestVersion,
+          url: latestUrl,
         });
       }
     } catch (error) {
