@@ -57,8 +57,6 @@ export default class RoomController {
           url: "",
         });
       }
-
-      res.json({ message: "auto_update" });
     } catch (error) {
       console.error(error);
       res
