@@ -1,3 +1,4 @@
+import fetch from "node-fetch";
 import { Request, Response } from "express";
 
 // Utils
@@ -41,12 +42,16 @@ export default class RoomController {
       } = req.body;
       version_name += "v" + version_name;
 
+      interface GitHubRelease {
+        tag_name: string;
+        zipball_url: string;
+      }
+
       // Fetch the latest release from the GitHub API
       const response = await fetch(
         "https://api.github.com/repos/languageXchange/languageXchange/releases/latest"
       );
-      const data = await response.json();
-
+      const data = (await response.json()) as GitHubRelease;
       // Extract the version and zipball_url from the response
       const latestVersion = data.tag_name;
       const latestUrl = data.zipball_url;
