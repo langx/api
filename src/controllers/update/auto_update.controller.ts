@@ -39,7 +39,6 @@ export default class RoomController {
         plugin_version,
         is_prod,
       } = req.body;
-      version_name += "v" + version_name;
 
       // Fetch the latest release from the GitHub API
       const response = await fetch(
@@ -48,7 +47,9 @@ export default class RoomController {
       const data = await response.json();
 
       // Extract the version and zipball_url from the response
-      const latestVersion = data.tag_name;
+      const latestVersion = data.tag_name.startsWith("v")
+        ? data.tag_name.substring(1)
+        : data.tag_name;
       const latestUrl = data.zipball_url;
 
       console.log("appVersion", version_name);
