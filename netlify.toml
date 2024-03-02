@@ -1,6 +1,6 @@
 [build]
   base = "/"
-  command = "npm install && npm run build"
+  command = "npm install && npm run build && npm run start"
   publish = "/dist/"
   [build.environment]
     NODE_VERSION = "20"
