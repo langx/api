@@ -17,9 +17,9 @@ jobs:
           RELEASE_NOTES=$(echo "$API_RESPONSE" | jq -r '.body' | tr -d '\n')
           echo "release_notes=$RELEASE_NOTES" >> $GITHUB_ENV
 
-      # - name: Send Discord Notification
-      #   env:
-      #     DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-      #   run: |
-      #     RELEASE_NOTES=$(echo "${{ steps.get_release_notes.outputs.release_notes }}")
-      #     curl -H "Content-Type: application/json" -X POST -d "{\"content\":\"New release: $RELEASE_NOTES\"}" $DISCORD_WEBHOOK
+      - name: Send Discord Notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          RELEASE_NOTES=$(echo "${{ steps.get_release_notes.outputs.release_notes }}")
+          curl -H "Content-Type: application/json" -X POST -d "{\"content\":\"New release: $RELEASE_NOTES\"}" $DISCORD_WEBHOOK
