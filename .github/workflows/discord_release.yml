@@ -25,4 +25,5 @@ jobs:
           RELEASE_NOTES: ${{ env.release_notes }}
           RELEASE_URL: ${{ env.release_url }}
         run: |
-          curl -H "Content-Type: application/json" -X POST -d "{\"content\":\"New release: $RELEASE_NOTES\n\n$RELEASE_URL\"}" $DISCORD_WEBHOOK
+          PAYLOAD=$(jq -n --arg rn "$RELEASE_NOTES" --arg url "$RELEASE_URL" '{content: ($rn + "\n\n" + $url)}')
+          curl -H "Content-Type: application/json" -X POST -d "$PAYLOAD" $DISCORD_WEBHOOK
