@@ -12,12 +12,14 @@ jobs:
       - name: Fetch Release Notes
         id: get_release_notes
         run: |
-          RELEASE_NOTES=$(curl -s -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/:owner/:repo/releases/latest | jq -r '.body')
+          API_RESPONSE=$(curl -s -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/:owner/:repo/releases/latest)
+          echo "API Response: $API_RESPONSE"
+          RELEASE_NOTES=$(echo "$API_RESPONSE" | jq -r '.body')
           echo "::set-output name=release_notes::$RELEASE_NOTES"
 
-      - name: Send Discord Notification
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        run: |
-          RELEASE_NOTES=$(echo "${{ steps.get_release_notes.outputs.release_notes }}")
-          curl -H "Content-Type: application/json" -X POST -d "{\"content\":\"New release: $RELEASE_NOTES\"}" $DISCORD_WEBHOOK
+      # - name: Send Discord Notification
+      #   env:
+      #     DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      #   run: |
+      #     RELEASE_NOTES=$(echo "${{ steps.get_release_notes.outputs.release_notes }}")
+      #     curl -H "Content-Type: application/json" -X POST -d "{\"content\":\"New release: $RELEASE_NOTES\"}" $DISCORD_WEBHOOK
