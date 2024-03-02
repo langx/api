@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import axios from 'axios';
 
 // Utils
 import { throwIfMissing } from "../../utils/utils";
@@ -41,10 +42,8 @@ export default class RoomController {
       } = req.body;
 
       // Fetch the latest release from the GitHub API
-      const response = await fetch(
-        "https://api.github.com/repos/languageXchange/languageXchange/releases/latest"
-      );
-      const data = await response.json();
+      const response = await axios.get("https://api.github.com/repos/languageXchange/languageXchange/releases/latest");
+      const data = response.data;
 
       // Extract the version and zipball_url from the response
       const latestVersion = data.tag_name.startsWith("v")
