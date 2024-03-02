@@ -2,7 +2,7 @@ name: Discord Release Notes Notification
 
 on:
   release:
-    types: [edited]
+    types: [published]
 
 jobs:
   send-release-notes:
