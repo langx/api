@@ -15,7 +15,7 @@ jobs:
           API_RESPONSE=$(curl -s -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/:owner/:repo/releases/latest)
           echo "API Response: $API_RESPONSE"
           RELEASE_NOTES=$(echo "$API_RESPONSE" | jq -r '.body')
-          echo "::set-output name=release_notes::$RELEASE_NOTES"
+          echo "release_notes=$RELEASE_NOTES" >> $GITHUB_ENV
 
       # - name: Send Discord Notification
       #   env:
