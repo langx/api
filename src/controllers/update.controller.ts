@@ -1,4 +1,12 @@
 import { Request, Response } from "express";
+import "dotenv/config";
+
+const env: any = {
+  ANDROID_VERSION: process.env.ANDROID_VERSION as string,
+  ANDROID_MAINTENANCE: (process.env.ANDROID_MAINTENANCE as string) === "true",
+  IOS_VERSION: process.env.IOS_VERSION as string,
+  IOS_MAINTENANCE: (process.env.IOS_MAINTENANCE as string) === "true",
+};
 
 interface AppUpdate {
   latest: string;
@@ -41,8 +49,8 @@ export default class RoomController {
   async android(req: Request, res: Response) {
     try {
       let appUpdate: AppUpdate = {
-        latest: "0.5.18",
-        maintenance_enabled: false,
+        latest: env.ANDROID_VERSION,
+        maintenance_enabled: env.ANDROID_MAINTENANCE,
         ...messages,
       };
 
@@ -58,8 +66,8 @@ export default class RoomController {
   async ios(req: Request, res: Response) {
     try {
       let appUpdate: AppUpdate = {
-        latest: "0.5.18",
-        maintenance_enabled: false,
+        latest: env.IOS_VERSION,
+        maintenance_enabled: env.IOS_MAINTENANCE,
         ...messages,
       };
 
