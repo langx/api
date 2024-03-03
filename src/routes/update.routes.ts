@@ -10,7 +10,7 @@ class UpdateRoutes {
   }
 
   intializeRoutes() {
-    this.router.post("/update", this.updateController.update);
+    this.router.post("/", this.updateController.update);
   }
 }
 
