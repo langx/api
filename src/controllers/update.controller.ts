@@ -6,7 +6,6 @@ interface AppUpdate {
   maintenace_msg?: {
     title: string;
     message: string;
-    button: string;
   };
   major_update_msg?: {
     title: string;
@@ -24,7 +23,6 @@ const messages = {
   maintenace_msg: {
     title: "Maintenance Mode",
     message: "The app is currently under maintenance. Please check back later.",
-    button: "OK",
   },
   major_update_msg: {
     title: "Major Update Available",
@@ -44,7 +42,7 @@ export default class RoomController {
     try {
       let appUpdate: AppUpdate = {
         latest: "0.5.18",
-        maintenance_enabled: false,
+        maintenance_enabled: true,
         ...messages,
       };
 
@@ -61,7 +59,7 @@ export default class RoomController {
     try {
       let appUpdate: AppUpdate = {
         latest: "0.5.18",
-        maintenance_enabled: false,
+        maintenance_enabled: true,
         ...messages,
       };
 
