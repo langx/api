@@ -42,7 +42,7 @@ export default class RoomController {
     try {
       let appUpdate: AppUpdate = {
         latest: "0.5.18",
-        maintenance_enabled: true,
+        maintenance_enabled: false,
         ...messages,
       };
 
@@ -59,7 +59,7 @@ export default class RoomController {
     try {
       let appUpdate: AppUpdate = {
         latest: "0.5.18",
-        maintenance_enabled: true,
+        maintenance_enabled: false,
         ...messages,
       };
 
