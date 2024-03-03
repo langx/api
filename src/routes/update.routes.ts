@@ -10,7 +10,8 @@ class UpdateRoutes {
   }
 
   intializeRoutes() {
-    this.router.get("/", this.updateController.update);
+    this.router.get("/android", this.updateController.android);
+    this.router.get("/ios", this.updateController.ios);
   }
 }
 
