@@ -79,4 +79,21 @@ export default class RoomController {
         .json({ message: "Internal Server Error", version: "", url: "" });
     }
   }
+
+  async web(req: Request, res: Response) {
+    try {
+      let appUpdate: AppUpdate = {
+        latest: env.WEB_VERSION,
+        maintenance_enabled: env.WEB_MAINTENANCE,
+        ...messages,
+      };
+
+      return res.json(appUpdate);
+    } catch (error) {
+      console.error(error);
+      res
+        .status(400)
+        .json({ message: "Internal Server Error", version: "", url: "" });
+    }
+  }
 }
