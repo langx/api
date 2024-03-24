@@ -6,6 +6,8 @@ const env: any = {
   ANDROID_MAINTENANCE: (process.env.ANDROID_MAINTENANCE as string) === "true",
   IOS_VERSION: process.env.IOS_VERSION as string,
   IOS_MAINTENANCE: (process.env.IOS_MAINTENANCE as string) === "true",
+  WEB_VERSION: process.env.WEB_VERSION as string,
+  WEB_MAINTENANCE: (process.env.WEB_MAINTENANCE as string) === "true",
 };
 
 interface AppUpdate {
