@@ -1,5 +1,5 @@
-import { Router } from 'express';
-import UserController from '../controllers/user.controller';
+import { Router } from "express";
+import UserController from "../controllers/user.controller";
 
 class MessageRoutes {
   router = Router();
@@ -10,7 +10,8 @@ class MessageRoutes {
   }
 
   intializeRoutes() {
-    this.router.patch('/', this.controller.update);
+    this.router.post("/", this.controller.create);
+    this.router.patch("/", this.controller.update);
   }
 }
 
