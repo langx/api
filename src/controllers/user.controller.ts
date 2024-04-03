@@ -29,13 +29,47 @@ interface UserDocument extends Models.Document {
 export default class UserController {
   async update(req: Request, res: Response) {
     try {
+      console.log("update user");
       throwIfMissing(req.headers, ["x-appwrite-user-id", "x-appwrite-jwt"]);
-      throwIfMissing(req.body, ["data"]);
+      if (!req.body || Object.keys(req.body).length === 0) {
+        console.log("Request body is empty.");
+        return res
+          .status(400)
+          .json({ ok: false, error: "Request body is empty." });
+      }
+
       const sender: string = req.headers["x-appwrite-user-id"] as string;
       const jwt: string = req.headers["x-appwrite-jwt"] as string;
 
+      console.log(`sender: ${sender}`);
+      console.log(`jwt: ${jwt}`);
+
       // Set data to variables
-      const data: string = req.body.data;
+      const data: any = req.body;
+
+      const disallowedFields = [
+        "country",
+        "countyCode",
+        "gender",
+        "birthdate",
+        "badges",
+        "totalUnseen",
+        "totalUnseenArchived",
+        "contributors",
+        "sponsor",
+        "streaks",
+      ];
+
+      for (const field of disallowedFields) {
+        if (data.hasOwnProperty(field)) {
+          console.log(`Disallowed field "${field}" found in request body.`);
+          return res
+            .status(400)
+            .json({ ok: false, error: `Field "${field}" is not allowed.` });
+        }
+      }
+
+      console.log("Environment variables: ", env);
 
       // Check JWT
       const verifyUser = new Client()
@@ -45,126 +79,35 @@ export default class UserController {
 
       const account = new Account(verifyUser);
       const user = await account.get();
-      // console.log(`user: ${JSON.stringify(user)}`);
+      console.log(`user: ${JSON.stringify(user)}`);
 
       if (user.$id !== sender) {
         return res.status(400).json({ ok: false, error: "jwt is invalid" });
       }
 
-      return res.send("User updated");
+      const client = new Client()
+        .setEndpoint(env.APP_ENDPOINT)
+        .setProject(env.APP_PROJECT)
+        .setKey(env.API_KEY);
 
-      // const client = new Client()
-      //   .setEndpoint(env.APP_ENDPOINT)
-      //   .setProject(env.APP_PROJECT)
-      //   .setKey(env.API_KEY);
+      const database = new Databases(client);
 
-      // const database = new Databases(client);
+      const currentUserDoc = (await database.getDocument(
+        env.APP_DATABASE,
+        env.USERS_COLLECTION,
+        sender
+      )) as UserDocument;
 
-      // // Check user blocked or not
-      // const currentUserDoc = (await database.getDocument(
-      //   env.APP_DATABASE,
-      //   env.USERS_COLLECTION,
-      //   sender
-      // )) as UserDocument;
+      // Update user data
+      console.log("Updating user data...", data);
+      const response = await database.updateDocument(
+        env.APP_DATABASE,
+        env.USERS_COLLECTION,
+        sender,
+        data
+      );
 
-      // const userDoc = (await database.getDocument(
-      //   env.APP_DATABASE,
-      //   env.USERS_COLLECTION,
-      //   to
-      // )) as UserDocument;
-
-      // // console.log(`currentUserDoc: ${JSON.stringify(currentUserDoc)}`);
-      // // console.log(`userDoc: ${JSON.stringify(userDoc)}`);
-
-      // if (currentUserDoc?.blockedUsers?.includes(to)) {
-      //   res.status(403).json({ message: "You have blocked this user." });
-      //   return;
-      // }
-
-      // if (userDoc?.blockedUsers?.includes(sender)) {
-      //   res
-      //     .status(403)
-      //     .json({ message: "You have been blocked by this user." });
-      //   return;
-      // }
-
-      // // Create a message
-      // let messageData = {
-      //   sender: sender,
-      //   to: to,
-      //   roomId: roomId,
-      //   replyTo: replyTo,
-      //   seen: false,
-      //   type: type,
-      //   body: null,
-      //   image: null,
-      //   audio: null,
-      // };
-
-      // switch (type) {
-      //   case "body":
-      //     messageData = {
-      //       ...messageData,
-      //       body: req.body.body,
-      //     };
-      //     break;
-      //   case "image":
-      //     messageData = {
-      //       ...messageData,
-      //       image: req.body.image,
-      //     };
-      //     break;
-      //   case "audio":
-      //     messageData = {
-      //       ...messageData,
-      //       audio: req.body.audio,
-      //     };
-      //     break;
-      //   default:
-      //     // Send error response
-      //     res.status(400).json({
-      //       ok: false,
-      //       error: "type is not valid",
-      //     });
-      //     break;
-      // }
-
-      // // console.log(`messageData: ${JSON.stringify(messageData)}`);
-
-      // // Create document
-      // let message = await database.createDocument(
-      //   env.APP_DATABASE,
-      //   env.MESSAGES_COLLECTION,
-      //   $id,
-      //   messageData,
-      //   [
-      //     Permission.read(Role.user(to)),
-      //     Permission.update(Role.user(to)),
-      //     Permission.read(Role.user(sender)),
-      //     Permission.update(Role.user(sender)),
-      //     Permission.delete(Role.user(sender)),
-      //   ]
-      // );
-
-      // // console.log(`message: ${JSON.stringify(message)}`);
-
-      // if (message?.$id) {
-      //   console.log("message created");
-      //   // Update room $updatedAt
-      //   let room = await database.updateDocument(
-      //     env.APP_DATABASE,
-      //     env.ROOMS_COLLECTION,
-      //     roomId,
-      //     { $updatedAt: Date.now() }
-      //   );
-      //   room?.$id
-      //     ? console.log("room updated")
-      //     : console.log("room not updated");
-      //   res.status(201).json(message);
-      // } else {
-      //   console.log("message not created");
-      //   res.status(304).json({ message: "Not Modified" });
-      // }
+      return res.send(response);
     } catch (err) {
       res.status(500).json({
         message: "Internal Server Error!",
