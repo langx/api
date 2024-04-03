@@ -1,13 +1,6 @@
 import { Request, Response } from "express";
 import "dotenv/config";
-import {
-  Client,
-  Databases,
-  Account,
-  Permission,
-  Role,
-  Models,
-} from "node-appwrite";
+import { Client, Databases, Account, Permission, Role } from "node-appwrite";
 
 // Utils
 import { throwIfMissing } from "../utils/utils";
@@ -21,10 +14,6 @@ const env: any = {
   MESSAGES_COLLECTION: process.env.MESSAGES_COLLECTION as string,
   ROOMS_COLLECTION: process.env.ROOMS_COLLECTION as string,
 };
-
-interface UserDocument extends Models.Document {
-  blockedUsers?: string[];
-}
 
 export default class UserController {
   async create(req: Request, res: Response) {
@@ -170,12 +159,6 @@ export default class UserController {
         .setKey(env.API_KEY);
 
       const database = new Databases(client);
-
-      const currentUserDoc = (await database.getDocument(
-        env.APP_DATABASE,
-        env.USERS_COLLECTION,
-        sender
-      )) as UserDocument;
 
       // Update user data
       console.log("Updating user data...", data);
