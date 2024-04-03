@@ -79,7 +79,7 @@ export default class UserController {
       const database = new Databases(client);
 
       // Create user data
-      console.log("Creating user data...", data);
+      console.log("Creating user doc...", data);
       const response = await database.createDocument(
         env.APP_DATABASE,
         env.USERS_COLLECTION,
@@ -161,7 +161,7 @@ export default class UserController {
       const database = new Databases(client);
 
       // Update user data
-      console.log("Updating user data...", data);
+      console.log("Updating user doc...", data);
       const response = await database.updateDocument(
         env.APP_DATABASE,
         env.USERS_COLLECTION,
