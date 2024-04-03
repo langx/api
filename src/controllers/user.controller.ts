@@ -99,7 +99,7 @@ export default class UserController {
 
   async update(req: Request, res: Response) {
     try {
-      // console.log("update user");
+      console.log("update user");
       throwIfMissing(req.headers, ["x-appwrite-user-id", "x-appwrite-jwt"]);
       if (!req.body || Object.keys(req.body).length === 0) {
         console.log("Request body is empty.");
