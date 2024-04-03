@@ -55,7 +55,12 @@ export default class UserController {
         }
       }
 
+      // Add default badges
       data.badges = ["early-adopter"];
+
+      // Add default notifications
+      data.notifications = ["email"];
+      data.notificationsArray = ["message", "visit", "update", "promotion"];
 
       // Check JWT
       const verifyUser = new Client()
