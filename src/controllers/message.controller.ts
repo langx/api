@@ -268,4 +268,60 @@ export default class MessageController {
       });
     }
   }
+
+  //    this.router.delete("/:id", this.controller.delete);
+  // delete a message
+  async delete(req: Request, res: Response) {
+    try {
+      throwIfMissing(req.headers, ["x-appwrite-user-id", "x-appwrite-jwt"]);
+      throwIfMissing(req.params, ["id"]);
+
+      const sender: string = req.headers["x-appwrite-user-id"] as string;
+      const jwt: string = req.headers["x-appwrite-jwt"] as string;
+      const messageId: string = req.params.id;
+      console.log(messageId);
+
+      // Check JWT
+      const verifyUser = new Client()
+        .setEndpoint(env.APP_ENDPOINT)
+        .setProject(env.APP_PROJECT)
+        .setJWT(jwt);
+
+      const account = new Account(verifyUser);
+      const user = await account.get();
+
+      if (user.$id !== sender) {
+        return res.status(400).json({ ok: false, error: "jwt is invalid" });
+      }
+
+      const client = new Client()
+        .setEndpoint(env.APP_ENDPOINT)
+        .setProject(env.APP_PROJECT)
+        .setKey(env.API_KEY);
+
+      const database = new Databases(client);
+
+      // Delete the message
+      let message = await database.updateDocument(
+        env.APP_DATABASE,
+        env.MESSAGES_COLLECTION,
+        messageId,
+        { body: "_deleted_" }
+      );
+      console.log(message);
+
+      if (message) {
+        console.log("message deleted");
+        res.status(200).json(message);
+      } else {
+        console.log("message not deleted");
+        res.status(304).json({ ok: false, message: "Not Modified" });
+      }
+    } catch (err) {
+      res.status(500).json({
+        message: "Internal Server Error!",
+        err: err,
+      });
+    }
+  }
 }

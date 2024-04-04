@@ -12,6 +12,7 @@ class MessageRoutes {
   intializeRoutes() {
     this.router.post("/", this.controller.create);
     this.router.patch("/", this.controller.update);
+    this.router.delete("/:id", this.controller.delete);
   }
 }
 
