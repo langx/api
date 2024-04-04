@@ -1,5 +1,5 @@
-import { Router } from 'express';
-import MessageController from '../controllers/message.controller';
+import { Router } from "express";
+import MessageController from "../controllers/message.controller";
 
 class MessageRoutes {
   router = Router();
@@ -10,7 +10,8 @@ class MessageRoutes {
   }
 
   intializeRoutes() {
-    this.router.post('/', this.controller.create);
+    this.router.post("/", this.controller.create);
+    this.router.patch("/", this.controller.update);
   }
 }
 

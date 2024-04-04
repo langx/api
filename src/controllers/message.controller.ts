@@ -195,4 +195,77 @@ export default class MessageController {
       });
     }
   }
+
+  async update(req: Request, res: Response) {
+    try {
+      console.log("update messaage");
+      throwIfMissing(req.headers, ["x-appwrite-user-id", "x-appwrite-jwt"]);
+      if (!req.body || Object.keys(req.body).length === 0) {
+        console.log("Request body is empty.");
+        return res
+          .status(400)
+          .json({ ok: false, error: "Request body is empty." });
+      }
+      throwIfMissing(req.body, ["id", "data"]);
+
+      const sender: string = req.headers["x-appwrite-user-id"] as string;
+      const jwt: string = req.headers["x-appwrite-jwt"] as string;
+      // Set data to variables
+      const messageId: string = req.body.id;
+      const data: any = req.body.data;
+      console.log(data);
+
+      const disallowedFields = ["sender", "to", "roomId"];
+
+      for (const field of disallowedFields) {
+        if (data.hasOwnProperty(field)) {
+          console.log(`Disallowed field "${field}" found in request body.`);
+          return res
+            .status(400)
+            .json({ ok: false, error: `Field "${field}" is not allowed.` });
+        }
+      }
+
+      // Check JWT
+      const verifyUser = new Client()
+        .setEndpoint(env.APP_ENDPOINT)
+        .setProject(env.APP_PROJECT)
+        .setJWT(jwt);
+
+      const account = new Account(verifyUser);
+      const user = await account.get();
+
+      if (user.$id !== sender) {
+        return res.status(400).json({ ok: false, error: "jwt is invalid" });
+      }
+
+      const client = new Client()
+        .setEndpoint(env.APP_ENDPOINT)
+        .setProject(env.APP_PROJECT)
+        .setKey(env.API_KEY);
+
+      const database = new Databases(client);
+
+      // Update the message
+      let message = await database.updateDocument(
+        env.APP_DATABASE,
+        env.MESSAGES_COLLECTION,
+        messageId,
+        data
+      );
+
+      if (message?.$id) {
+        console.log("message updated");
+        res.status(200).json(message);
+      } else {
+        console.log("message not updated");
+        res.status(304).json({ ok: false, message: "Not Modified" });
+      }
+    } catch (err) {
+      res.status(500).json({
+        message: "Internal Server Error!",
+        err: err,
+      });
+    }
+  }
 }
