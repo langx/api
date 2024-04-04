@@ -89,10 +89,7 @@ export default class LanguageController {
         env.LANGUAGES_COLLECTION,
         ID.unique(),
         data,
-        [
-          Permission.update(Role.user(sender)),
-          Permission.delete(Role.user(sender)),
-        ]
+        [Permission.delete(Role.user(sender))]
       );
 
       return res.send(response);
