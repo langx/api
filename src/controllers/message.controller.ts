@@ -199,22 +199,23 @@ export default class MessageController {
 
   async update(req: Request, res: Response) {
     try {
-      console.log("update messaage");
+      console.log("update message");
       throwIfMissing(req.headers, ["x-appwrite-user-id", "x-appwrite-jwt"]);
+      throwIfMissing(req.params, ["id"]);
       if (!req.body || Object.keys(req.body).length === 0) {
         console.log("Request body is empty.");
         return res
           .status(400)
           .json({ ok: false, error: "Request body is empty." });
       }
-      throwIfMissing(req.body, ["id", "data"]);
 
       const sender: string = req.headers["x-appwrite-user-id"] as string;
       const jwt: string = req.headers["x-appwrite-jwt"] as string;
       // Set data to variables
-      const messageId: string = req.body.id;
-      const data: any = req.body.data;
-      console.log(data);
+      const messageId: string = req.params.id;
+      const data: any = req.body;
+      // console.log(messageId);
+      // console.log(data);
 
       const disallowedFields = ["sender", "to", "roomId"];
 
@@ -274,6 +275,7 @@ export default class MessageController {
   // delete a message
   async delete(req: Request, res: Response) {
     try {
+      console.log("delete message");
       throwIfMissing(req.headers, ["x-appwrite-user-id", "x-appwrite-jwt"]);
       throwIfMissing(req.params, ["id"]);
 
