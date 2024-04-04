@@ -105,6 +105,7 @@ export default class LanguageController {
     try {
       console.log("update language");
       throwIfMissing(req.headers, ["x-appwrite-user-id", "x-appwrite-jwt"]);
+      throwIfMissing(req.params, ["id"]);
       if (!req.body || Object.keys(req.body).length === 0) {
         console.log("Request body is empty.");
         return res
@@ -116,8 +117,8 @@ export default class LanguageController {
       const jwt: string = req.headers["x-appwrite-jwt"] as string;
 
       // Set data to variables
-      const id: string = req.body.id;
-      const data: any = req.body.data;
+      const id: string = req.params.id;
+      const data: any = req.body;
 
       const disallowedFields = ["userId"];
 
