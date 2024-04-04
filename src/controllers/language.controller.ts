@@ -69,7 +69,7 @@ export default class LanguageController {
 
       const account = new Account(verifyUser);
       const user = await account.get();
-      console.log(`user: ${JSON.stringify(user)}`);
+      // console.log(`user: ${JSON.stringify(user)}`);
 
       if (user.$id !== sender) {
         return res.status(400).json({ ok: false, error: "jwt is invalid" });
