@@ -106,6 +106,7 @@ export default class UserController {
     try {
       console.log("update user");
       throwIfMissing(req.headers, ["x-appwrite-user-id", "x-appwrite-jwt"]);
+      throwIfMissing(req.params, ["id"]);
       if (!req.body || Object.keys(req.body).length === 0) {
         console.log("Request body is empty.");
         return res
@@ -115,9 +116,16 @@ export default class UserController {
 
       const sender: string = req.headers["x-appwrite-user-id"] as string;
       const jwt: string = req.headers["x-appwrite-jwt"] as string;
-
       // console.log(`sender: ${sender}`);
       // console.log(`jwt: ${jwt}`);
+
+      // Check if user is updating their own data
+      if (sender !== req.params.id) {
+        return res.status(400).json({
+          ok: false,
+          error: "You can only update your own data.",
+        });
+      }
 
       // Set data to variables
       const data: any = req.body;
