@@ -124,6 +124,7 @@ export default class MessageController {
         roomId: roomId,
         replyTo: replyTo,
         seen: false,
+        deleted: false,
         type: type,
         body: null,
         image: null,
@@ -306,7 +307,13 @@ export default class MessageController {
         env.APP_DATABASE,
         env.MESSAGES_COLLECTION,
         messageId,
-        { body: "_deleted_" }
+        {
+          deleted: true,
+          type: "body",
+          body: "[deleted message]",
+          image: null,
+          audio: null,
+        }
       );
       console.log(message);
 
