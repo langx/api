@@ -166,13 +166,7 @@ export default class MessageController {
         env.MESSAGES_COLLECTION,
         $id,
         messageData,
-        [
-          Permission.read(Role.user(to)),
-          Permission.update(Role.user(to)),
-          Permission.read(Role.user(sender)),
-          Permission.update(Role.user(sender)),
-          Permission.delete(Role.user(sender)),
-        ]
+        [Permission.read(Role.user(to)), Permission.read(Role.user(sender))]
       );
 
       // console.log(`message: ${JSON.stringify(message)}`);
