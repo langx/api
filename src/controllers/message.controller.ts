@@ -46,10 +46,10 @@ export default class MessageController {
           throwIfMissing(req.body, ["body"]);
           break;
         case "image":
-          throwIfMissing(req.body, ["image"]);
+          throwIfMissing(req.body, ["imageId"]);
           break;
         case "audio":
-          throwIfMissing(req.body, ["audio"]);
+          throwIfMissing(req.body, ["audioId"]);
           break;
         default:
           // Send error response
@@ -127,8 +127,8 @@ export default class MessageController {
         deleted: false,
         type: type,
         body: null,
-        image: null,
-        audio: null,
+        imageId: null,
+        audioId: null,
       };
 
       switch (type) {
@@ -141,13 +141,13 @@ export default class MessageController {
         case "image":
           messageData = {
             ...messageData,
-            image: req.body.image,
+            imageId: req.body.imageId,
           };
           break;
         case "audio":
           messageData = {
             ...messageData,
-            audio: req.body.audio,
+            audioId: req.body.audioId,
           };
           break;
         default:
@@ -313,8 +313,8 @@ export default class MessageController {
           deleted: true,
           type: "body",
           body: "[deleted message]",
-          image: null,
-          audio: null,
+          imageId: null,
+          audioId: null,
         }
       );
       console.log(message);
