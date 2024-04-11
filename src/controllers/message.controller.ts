@@ -26,6 +26,10 @@ interface UserDocument extends Models.Document {
   blockedUsers?: string[];
 }
 
+interface RoomDocument extends Models.Document {
+  users: string[];
+}
+
 export default class MessageController {
   async create(req: Request, res: Response) {
     try {
@@ -88,6 +92,23 @@ export default class MessageController {
         .setKey(env.API_KEY);
 
       const database = new Databases(client);
+
+      // Check Room has this user or not
+      const roomDoc = (await database.getDocument(
+        env.APP_DATABASE,
+        env.ROOMS_COLLECTION,
+        roomId
+      )) as RoomDocument;
+
+      // console.log(`roomDoc.users: ${roomDoc.users}`);
+      // console.log(`sender: ${sender}`);
+      // console.log(`to: ${to}`);
+
+      // Check if the user is in the room
+      if (!roomDoc.users.includes(sender) || !roomDoc.users.includes(to)) {
+        res.status(403).json({ message: "You are not in this room." });
+        return;
+      }
 
       // Check user blocked or not
       const currentUserDoc = (await database.getDocument(
