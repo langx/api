@@ -13,9 +13,12 @@ export default class MailController {
       throwIfMissing(req.body, ["email"]);
       // Check if the email is valid
       const email = req.body.email;
-      if (!email.includes("@")) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!emailRegex.test(email)) {
         return res.status(400).json({ status: "Invalid email" });
       }
+
       // Add the contact to the SendGrid list
       fetch("https://api.sendgrid.com/v3/marketing/contacts", {
         method: "PUT",
