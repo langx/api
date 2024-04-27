@@ -7,6 +7,7 @@ import userRoutes from "./user.routes";
 import languageRoutes from "./language.routes";
 import visitRoutes from "./visit.routes";
 import updateRoutes from "./update.routes";
+import mailRoutes from "./mail.routes";
 
 export default class Routes {
   constructor(app: Application) {
@@ -17,5 +18,6 @@ export default class Routes {
     app.use("/api/language", languageRoutes);
     app.use("/api/visit", visitRoutes);
     app.use("/api/update", updateRoutes);
+    app.use("/api/mail", mailRoutes);
   }
 }
