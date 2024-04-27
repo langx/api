@@ -29,7 +29,7 @@ export default class MailController {
         }),
       }).then((response) => {
         if (response.status === 202) {
-          console.log("Contact added successfully!");
+          console.log(`${email} added successfully!`);
           return res.json({ status: "ok" });
         } else {
           return res.status(400).json({ status: "Internal Server Error" });
