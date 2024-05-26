@@ -15,6 +15,35 @@ const env: any = {
   ROOMS_COLLECTION: process.env.ROOMS_COLLECTION as string,
 };
 
+const validateUserData = (data: any) => {
+  const allowedGenders = ["male", "female", "other"];
+  const birthdate = new Date(data.birthdate);
+
+  // Check age is at least 13
+  const age = getAge(birthdate);
+  if (age < 13) {
+    throw new Error("You must be at least 13 years old to use this app");
+  }
+
+  // Check gender is valid
+  if (!allowedGenders.includes(data.gender)) {
+    throw new Error("Please select a valid gender");
+  }
+};
+
+const getAge = (birthdate: Date) => {
+  const today = new Date();
+  const age = today.getFullYear() - birthdate.getFullYear();
+  const monthDifference = today.getMonth() - birthdate.getMonth();
+  if (
+    monthDifference < 0 ||
+    (monthDifference === 0 && today.getDate() < birthdate.getDate())
+  ) {
+    return age - 1;
+  }
+  return age;
+};
+
 export default class UserController {
   async create(req: Request, res: Response) {
     try {
@@ -52,6 +81,20 @@ export default class UserController {
           return res
             .status(400)
             .json({ ok: false, error: `Field "${field}" is not allowed.` });
+        }
+      }
+
+      // Validate user data
+      try {
+        validateUserData(data);
+      } catch (error) {
+        if (error instanceof Error) {
+          return res.status(400).json({ ok: false, error: error.message });
+        } else {
+          return res.status(400).json({
+            ok: false,
+            error: "Unknown error occurred during validation",
+          });
         }
       }
 
