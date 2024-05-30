@@ -1,5 +1,5 @@
-import { Router } from 'express';
-import RoomController from '../controllers/room.controller';
+import { Router } from "express";
+import RoomController from "../controllers/room.controller";
 
 class RoomRoutes {
   router = Router();
@@ -10,7 +10,8 @@ class RoomRoutes {
   }
 
   intializeRoutes() {
-    this.router.post('/', this.controller.create);
+    this.router.post("/", this.controller.create);
+    this.router.put("/:id", this.controller.update);
   }
 }
 
