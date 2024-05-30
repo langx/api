@@ -217,7 +217,6 @@ export default class UserController {
       const database = new Databases(client);
 
       // Update user data
-      console.log("Updating user doc...", data);
       const response = await database.updateDocument(
         env.APP_DATABASE,
         env.USERS_COLLECTION,
@@ -225,6 +224,7 @@ export default class UserController {
         data
       );
 
+      console.log("Updated user doc: ", data);
       return res.send(response);
     } catch (err) {
       res.status(500).json({
