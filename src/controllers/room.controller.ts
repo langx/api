@@ -24,6 +24,12 @@ const env: any = {
 
 interface UserDocument extends Models.Document {
   blockedUsers?: string[];
+  badges?: string[];
+}
+
+interface RoomDocument extends Models.Document {
+  users: string[];
+  copilot: string[];
 }
 
 export default class RoomController {
@@ -105,6 +111,118 @@ export default class RoomController {
       room?.$id ? console.log("room created") : console.log("room not created");
 
       res.status(201).json(room);
+    } catch (err) {
+      res.status(500).json({
+        message: "Internal Server Error!",
+        err: err,
+      });
+    }
+  }
+
+  async update(req: Request, res: Response) {
+    try {
+      console.log("update room");
+
+      throwIfMissing(req.headers, ["x-appwrite-user-id", "x-appwrite-jwt"]);
+      throwIfMissing(req.params, ["id"]);
+      if (!req.body || Object.keys(req.body).length === 0) {
+        console.log("Request body is empty.");
+        return res
+          .status(400)
+          .json({ ok: false, error: "Request body is empty." });
+      }
+
+      const sender: string = req.headers["x-appwrite-user-id"] as string;
+      const jwt: string = req.headers["x-appwrite-jwt"] as string;
+      const roomId: string = req.params.id;
+      const data: any = req.body;
+
+      // Disallow fields that should not be updated
+      const disallowedFields = ["users"];
+
+      for (const field of disallowedFields) {
+        if (data.hasOwnProperty(field)) {
+          console.log(`Disallowed field "${field}" found in request body.`);
+          return res
+            .status(400)
+            .json({ ok: false, error: `Field "${field}" is not allowed.` });
+        }
+      }
+
+      // Check JWT
+      const verifyUser = new Client()
+        .setEndpoint(env.APP_ENDPOINT)
+        .setProject(env.APP_PROJECT)
+        .setJWT(jwt);
+
+      const account = new Account(verifyUser);
+      const user = await account.get();
+
+      if (user.$id !== sender) {
+        return res.status(400).json({ ok: false, error: "jwt is invalid" });
+      }
+
+      const client = new Client()
+        .setEndpoint(env.APP_ENDPOINT)
+        .setProject(env.APP_PROJECT)
+        .setKey(env.API_KEY);
+
+      const database = new Databases(client);
+
+      // Check user has early-adoptor badge
+      const currentUserDoc = (await database.getDocument(
+        env.APP_DATABASE,
+        env.USERS_COLLECTION,
+        sender
+      )) as UserDocument;
+
+      if (!currentUserDoc.badges?.includes("early-adopter")) {
+        return res.status(403).json({
+          message: "You need to have early-adoptor badge to update this room.",
+        });
+      }
+
+      const room: RoomDocument = await database.getDocument(
+        env.APP_DATABASE,
+        env.ROOMS_COLLECTION,
+        roomId
+      );
+
+      if (!room.users.includes(sender)) {
+        return res
+          .status(403)
+          .json({ message: "You are not a member of this room." });
+      }
+
+      const isSenderInCopilot = room.copilot.includes(sender);
+
+      if (data.copilot && !isSenderInCopilot) {
+        console.log("Copilot set to the current user.");
+        room.copilot = [...room.copilot, sender];
+      } else if (!data.copilot && isSenderInCopilot) {
+        console.log("Copilot removed from the room.");
+        room.copilot = room.copilot.filter((item) => item !== sender);
+      } else {
+        room.copilot;
+      }
+
+      // console.log(room);
+
+      // Update the room
+      let updatedRoom = await database.updateDocument(
+        env.APP_DATABASE,
+        env.ROOMS_COLLECTION,
+        roomId,
+        { copilot: room.copilot }
+      );
+
+      if (updatedRoom?.$id) {
+        console.log("room updated");
+        res.status(200).json(updatedRoom);
+      } else {
+        console.log("room not updated");
+        res.status(304).json({ ok: false, message: "Not Modified" });
+      }
     } catch (err) {
       res.status(500).json({
         message: "Internal Server Error!",
