@@ -8,6 +8,7 @@ const env: any = {
   IOS_MAINTENANCE: (process.env.IOS_MAINTENANCE as string) === "true",
   WEB_VERSION: process.env.WEB_VERSION as string,
   WEB_MAINTENANCE: (process.env.WEB_MAINTENANCE as string) === "true",
+  COPILOT_MAINTENANCE: (process.env.COPILOT_MAINTENANCE as string) === "true",
 };
 
 interface AppUpdate {
@@ -91,6 +92,17 @@ export default class RoomController {
       };
 
       return res.json(appUpdate);
+    } catch (error) {
+      console.error(error);
+      res
+        .status(400)
+        .json({ message: "Internal Server Error", version: "", url: "" });
+    }
+  }
+
+  async copilot(req: Request, res: Response) {
+    try {
+      return res.json({ maintenance_enabled: env.COPILOT_MAINTENANCE });
     } catch (error) {
       console.error(error);
       res

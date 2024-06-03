@@ -13,6 +13,7 @@ class UpdateRoutes {
     this.router.get("/android", this.updateController.android);
     this.router.get("/ios", this.updateController.ios);
     this.router.get("/web", this.updateController.web);
+    this.router.get("/copilot", this.updateController.copilot);
   }
 }
 
