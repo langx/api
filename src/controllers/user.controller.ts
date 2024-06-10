@@ -99,7 +99,7 @@ export default class UserController {
       }
 
       // Add default badges
-      data.badges = ["early-adopter"];
+      data.badges = ["early-adopter", "pioneer"];
 
       // Add default notifications
       data.notifications = ["email"];
