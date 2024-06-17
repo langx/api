@@ -99,7 +99,7 @@ export default class UserController {
       }
 
       // Add pre defined username
-      data.username = `langx_${sender.slice(0, 5)}`;
+      data.username = `langx_${sender.slice(-4)}`;
 
       // Add default badges
       data.badges = ["early-adopter", "pioneer"];
