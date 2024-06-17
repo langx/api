@@ -189,6 +189,18 @@ export default class UserController {
         "streaks",
       ];
 
+      // Check Username Data
+      if (data.hasOwnProperty("username")) {
+        const pattern = /^[a-zA-Z0-9_]*$/;
+        if (!pattern.test(data.username)) {
+          return res.status(400).json({
+            ok: false,
+            error:
+              "Invalid username. Only alphanumeric characters and underscores are allowed.",
+          });
+        }
+      }
+
       for (const field of disallowedFields) {
         if (data.hasOwnProperty(field)) {
           console.log(`Disallowed field "${field}" found in request body.`);
