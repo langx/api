@@ -189,6 +189,42 @@ export default class UserController {
         "streaks",
       ];
 
+      const reservedUsernames = [
+        "admin",
+        "administrator",
+        "moderator",
+        "mod",
+        "support",
+        "help",
+        "contact",
+        "info",
+        "root",
+        "sys",
+        "system",
+        "super",
+        "superuser",
+        "user",
+        "users",
+        "account",
+        "accounts",
+        "profile",
+        "profiles",
+        "settings",
+        "setting",
+        "config",
+        "configuration",
+        "console",
+        "dashboard",
+        "langx",
+        "token",
+        "learn",
+        "practice",
+        "teacher",
+        "langxapp",
+        "xue",
+      ];
+
+      // Check Username Data
       // Check Username Data
       if (data.hasOwnProperty("username")) {
         const pattern = /^[a-zA-Z0-9_]*$/;
@@ -197,6 +233,15 @@ export default class UserController {
             ok: false,
             error:
               "Invalid username. Only alphanumeric characters and underscores are allowed.",
+          });
+        }
+
+        // Check if username is in the reserved list
+        if (reservedUsernames.includes(data.username)) {
+          return res.status(400).json({
+            ok: false,
+            error:
+              "This username is reserved. Please choose a different username.",
           });
         }
       }
