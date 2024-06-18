@@ -30,6 +30,12 @@ export default class LeaderboardController {
         [Query.orderDesc("balance")]
       );
 
+      response.documents = response.documents.map((doc) => {
+        doc.$id = doc.$id.slice(0, -10);
+        return doc;
+      });
+      response.total = response.documents.length;
+
       return res.send(response);
     } catch (err) {
       res.status(500).json({
