@@ -31,7 +31,7 @@ export default class LeaderboardController {
       );
 
       response.documents = response.documents.map((doc) => {
-        doc.$id = doc.$id.slice(0, -10);
+        doc.$id = doc.$id.slice(-10);
         doc.$permissions = [];
         doc.$databaseId = "";
         doc.$createdAt = "";
