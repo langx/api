@@ -97,7 +97,12 @@ export default class RoomController {
       }
 
       // Create a room
-      let roomData = { users: [sender, to] };
+      let roomData;
+      if (sender > to) {
+        roomData = { users: [sender, to] };
+      } else {
+        roomData = { users: [to, sender] };
+      }
 
       // Create document
       let room = await database.createDocument(
