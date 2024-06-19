@@ -30,6 +30,8 @@ interface UserDocument extends Models.Document {
 interface RoomDocument extends Models.Document {
   users: string[];
   copilot: string[];
+  typing: boolean[];
+  unseen: number[];
 }
 
 export default class RoomController {
@@ -99,9 +101,19 @@ export default class RoomController {
       // Create a room
       let roomData;
       if (sender > to) {
-        roomData = { users: [sender, to] };
+        roomData = {
+          users: [sender, to],
+          copilot: [],
+          typing: [false, false],
+          unseen: [0, 0],
+        };
       } else {
-        roomData = { users: [to, sender] };
+        roomData = {
+          users: [to, sender],
+          copilot: [],
+          typing: [false, false],
+          unseen: [0, 0],
+        };
       }
 
       // Create document
