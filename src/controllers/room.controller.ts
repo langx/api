@@ -140,6 +140,7 @@ export default class RoomController {
     try {
       console.log("update room");
 
+      // Validate headers and parameters
       throwIfMissing(req.headers, ["x-appwrite-user-id", "x-appwrite-jwt"]);
       throwIfMissing(req.params, ["id"]);
       if (!req.body || Object.keys(req.body).length === 0) {
@@ -156,7 +157,6 @@ export default class RoomController {
 
       // Disallow fields that should not be updated
       const disallowedFields = ["users"];
-
       for (const field of disallowedFields) {
         if (data.hasOwnProperty(field)) {
           console.log(`Disallowed field "${field}" found in request body.`);
@@ -166,67 +166,62 @@ export default class RoomController {
         }
       }
 
-      // Check JWT
-      const verifyUser = new Client()
+      // Verify JWT
+      const verifyClient = new Client()
         .setEndpoint(env.APP_ENDPOINT)
         .setProject(env.APP_PROJECT)
         .setJWT(jwt);
-
-      const account = new Account(verifyUser);
+      const account = new Account(verifyClient);
       const user = await account.get();
-
       if (user.$id !== sender) {
-        return res.status(400).json({ ok: false, error: "jwt is invalid" });
+        return res.status(400).json({ ok: false, error: "JWT is invalid" });
       }
 
       const client = new Client()
         .setEndpoint(env.APP_ENDPOINT)
         .setProject(env.APP_PROJECT)
         .setKey(env.API_KEY);
-
       const database = new Databases(client);
 
-      // Check user has early-adoptor badge
+      // Check if user has early-adopter badge
       const currentUserDoc = (await database.getDocument(
         env.APP_DATABASE,
         env.USERS_COLLECTION,
         sender
       )) as UserDocument;
-
       if (!currentUserDoc.badges?.includes("early-adopter")) {
-        return res.status(403).json({
-          message: "You need to have early-adoptor badge to update this room.",
-        });
+        return res
+          .status(403)
+          .json({
+            message:
+              "You need to have early-adopter badge to update this room.",
+          });
       }
 
+      // Check if user is a member of the room
       const room: RoomDocument = await database.getDocument(
         env.APP_DATABASE,
         env.ROOMS_COLLECTION,
         roomId
       );
-
       if (!room.users.includes(sender)) {
         return res
           .status(403)
           .json({ message: "You are not a member of this room." });
       }
 
+      // Update copilot field
       const isSenderInCopilot = room.copilot.includes(sender);
-
       if (data.copilot && !isSenderInCopilot) {
         console.log("Copilot set to the current user.");
-        room.copilot = [...room.copilot, sender];
+        room.copilot.push(sender);
       } else if (!data.copilot && isSenderInCopilot) {
         console.log("Copilot removed from the room.");
         room.copilot = room.copilot.filter((item) => item !== sender);
-      } else {
-        room.copilot;
       }
 
-      // console.log(room);
-
       // Update the room
-      let updatedRoom = await database.updateDocument(
+      const updatedRoom = await database.updateDocument(
         env.APP_DATABASE,
         env.ROOMS_COLLECTION,
         roomId,
@@ -234,17 +229,15 @@ export default class RoomController {
       );
 
       if (updatedRoom?.$id) {
-        console.log("room updated");
+        console.log("Room updated");
         res.status(200).json(updatedRoom);
       } else {
-        console.log("room not updated");
+        console.log("Room not updated");
         res.status(304).json({ ok: false, message: "Not Modified" });
       }
     } catch (err) {
-      res.status(500).json({
-        message: "Internal Server Error!",
-        err: err,
-      });
+      console.error(err); // Added error logging for better debugging
+      res.status(500).json({ message: "Internal Server Error!", err });
     }
   }
 }
