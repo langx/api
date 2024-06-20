@@ -32,6 +32,7 @@ interface RoomDocument extends Models.Document {
   copilot: string[];
   typing: boolean[];
   unseen: number[];
+  archived: string[];
 }
 
 export default class RoomController {
@@ -153,7 +154,7 @@ export default class RoomController {
       const sender: string = req.headers["x-appwrite-user-id"] as string;
       const jwt: string = req.headers["x-appwrite-jwt"] as string;
       const roomId: string = req.params.id;
-      const data: any = req.body;
+      const data: { copilot?: boolean; archived?: boolean } = req.body;
 
       // Disallow fields that should not be updated
       const disallowedFields = ["users"];
@@ -190,12 +191,9 @@ export default class RoomController {
         sender
       )) as UserDocument;
       if (!currentUserDoc.badges?.includes("early-adopter")) {
-        return res
-          .status(403)
-          .json({
-            message:
-              "You need to have early-adopter badge to update this room.",
-          });
+        return res.status(403).json({
+          message: "You need to have early-adopter badge to update this room.",
+        });
       }
 
       // Check if user is a member of the room
@@ -220,12 +218,27 @@ export default class RoomController {
         room.copilot = room.copilot.filter((item) => item !== sender);
       }
 
+      // Update archived field
+      const isSenderInArchived = room.archived.includes(sender);
+      if (data.archived && !isSenderInArchived) {
+        console.log("Archived set to the current user.");
+        room.archived.push(sender);
+      } else if (!data.archived && isSenderInArchived) {
+        console.log("Archived removed from the room.");
+        room.archived = room.archived.filter((item) => item !== sender);
+      }
+
+      console.log(room.copilot, room.archived);
+
       // Update the room
       const updatedRoom = await database.updateDocument(
         env.APP_DATABASE,
         env.ROOMS_COLLECTION,
         roomId,
-        { copilot: room.copilot }
+        {
+          copilot: room.copilot,
+          archived: room.archived,
+        }
       );
 
       if (updatedRoom?.$id) {
