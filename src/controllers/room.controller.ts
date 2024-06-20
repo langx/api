@@ -228,8 +228,6 @@ export default class RoomController {
         room.archived = room.archived.filter((item) => item !== sender);
       }
 
-      console.log(room.copilot, room.archived);
-
       // Update the room
       const updatedRoom = await database.updateDocument(
         env.APP_DATABASE,
