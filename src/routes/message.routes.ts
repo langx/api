@@ -11,9 +11,9 @@ class MessageRoutes {
 
   intializeRoutes() {
     this.router.post("/", this.controller.create);
-    this.router.patch("/:id", this.controller.update); // TODO: Deprecated! Remove this line in the future.
     this.router.put("/:id", this.controller.update);
     this.router.delete("/:id", this.controller.delete);
+    this.router.patch("/:id", this.controller.update); // TODO: Deprecated! Remove this line in the future.
   }
 }
 
