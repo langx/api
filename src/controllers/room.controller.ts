@@ -232,12 +232,11 @@ export default class RoomController {
       }
 
       // Update typing field
-      console.log("Typing:", data.typing);
       if (data.typing) {
-        console.log("Typing updated.");
+        console.log("Typing:", data.typing);
         room.typing[room.users.indexOf(sender)] = new Date();
       } else {
-        console.log("Typing removed.");
+        console.log("Typing:", data.typing);
         room.typing[room.users.indexOf(sender)] = new Date(2000, 0, 1);
       }
 
