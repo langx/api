@@ -30,9 +30,9 @@ interface UserDocument extends Models.Document {
 interface RoomDocument extends Models.Document {
   users: string[];
   copilot: string[];
-  typing: boolean[];
   unseen: number[];
   archived: string[];
+  typing: Date[];
 }
 
 export default class RoomController {
@@ -101,18 +101,20 @@ export default class RoomController {
 
       // Create a room
       let roomData;
+      const defaultDate = new Date(2000, 0, 1);
+
       if (sender > to) {
         roomData = {
           users: [sender, to],
           copilot: [],
-          typing: [false, false],
+          typing: [defaultDate, defaultDate],
           unseen: [0, 0],
         };
       } else {
         roomData = {
           users: [to, sender],
           copilot: [],
-          typing: [false, false],
+          typing: [defaultDate, defaultDate],
           unseen: [0, 0],
         };
       }
@@ -154,7 +156,8 @@ export default class RoomController {
       const sender: string = req.headers["x-appwrite-user-id"] as string;
       const jwt: string = req.headers["x-appwrite-jwt"] as string;
       const roomId: string = req.params.id;
-      const data: { copilot?: boolean; archived?: boolean } = req.body;
+      const data: { copilot?: boolean; archived?: boolean; typing?: boolean } =
+        req.body;
 
       // Disallow fields that should not be updated
       const disallowedFields = ["users"];
@@ -228,6 +231,16 @@ export default class RoomController {
         room.archived = room.archived.filter((item) => item !== sender);
       }
 
+      // Update typing field
+      console.log("Typing:", data.typing);
+      if (data.typing) {
+        console.log("Typing updated.");
+        room.typing[room.users.indexOf(sender)] = new Date();
+      } else {
+        console.log("Typing removed.");
+        room.typing[room.users.indexOf(sender)] = new Date(2000, 0, 1);
+      }
+
       // Update the room
       const updatedRoom = await database.updateDocument(
         env.APP_DATABASE,
@@ -236,6 +249,7 @@ export default class RoomController {
         {
           copilot: room.copilot,
           archived: room.archived,
+          typing: room.typing,
         }
       );
 
