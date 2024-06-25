@@ -200,7 +200,7 @@ export default class MessageController {
           env.APP_DATABASE,
           env.ROOMS_COLLECTION,
           roomId,
-          { lastMessageUpdatedAt: Date.now() }
+          { $updatedAt: Date.now() }
         );
         room?.$id
           ? console.log("room lastMessageUpdatedAt updated")
