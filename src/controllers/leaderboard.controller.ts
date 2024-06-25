@@ -19,7 +19,7 @@ export default class LeaderboardController {
         .setEndpoint(env.APP_ENDPOINT)
         .setProject(env.APP_PROJECT)
         .setKey(env.API_KEY)
-        .setSelfSigned();
+        .setSelfSigned(true);
 
       const database = new Databases(client);
 
