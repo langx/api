@@ -200,11 +200,11 @@ export default class MessageController {
           env.APP_DATABASE,
           env.ROOMS_COLLECTION,
           roomId,
-          { $updatedAt: Date.now() }
+          { lastMessageUpdatedAt: Date.now() }
         );
         room?.$id
-          ? console.log("room updated")
-          : console.log("room not updated");
+          ? console.log("room lastMessageUpdatedAt updated")
+          : console.log("room lastMessageUpdatedAt not updated");
         res.status(201).json(message);
       } else {
         console.log("message not created");
