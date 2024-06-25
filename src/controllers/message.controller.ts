@@ -195,12 +195,12 @@ export default class MessageController {
 
       if (message?.$id) {
         console.log("message created");
-        // Update room $updatedAt
+        // Update room lastMessageUpdatedAt
         let room = await database.updateDocument(
           env.APP_DATABASE,
           env.ROOMS_COLLECTION,
           roomId,
-          { $updatedAt: Date.now() }
+          { lastMessageUpdatedAt: new Date() }
         );
         room?.$id
           ? console.log("room lastMessageUpdatedAt updated")
