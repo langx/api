@@ -285,15 +285,15 @@ export default class MessageController {
       if (message?.$id) {
         console.log("message updated");
         // Update room lastMessageUpdatedAt
-        let room = await database.updateDocument(
-          env.APP_DATABASE,
-          env.ROOMS_COLLECTION,
-          message.roomId.$id,
-          { lastMessageUpdatedAt: new Date() }
-        );
-        room?.$id
-          ? console.log("room lastMessageUpdatedAt updated")
-          : console.log("room lastMessageUpdatedAt not updated");
+        // let room = await database.updateDocument(
+        //   env.APP_DATABASE,
+        //   env.ROOMS_COLLECTION,
+        //   message.roomId.$id,
+        //   { lastMessageUpdatedAt: new Date() }
+        // );
+        // room?.$id
+        //   ? console.log("room lastMessageUpdatedAt updated")
+        //   : console.log("room lastMessageUpdatedAt not updated");
         res.status(200).json(message);
       } else {
         console.log("message not updated");
