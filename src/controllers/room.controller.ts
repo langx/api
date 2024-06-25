@@ -109,6 +109,7 @@ export default class RoomController {
           copilot: [],
           typing: [defaultDate, defaultDate],
           unseen: [0, 0],
+          lastMessageUpdatedAt: new Date(),
         };
       } else {
         roomData = {
@@ -116,6 +117,7 @@ export default class RoomController {
           copilot: [],
           typing: [defaultDate, defaultDate],
           unseen: [0, 0],
+          lastMessageUpdatedAt: new Date(),
         };
       }
 
