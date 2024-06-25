@@ -28,6 +28,11 @@ interface UserDocument extends Models.Document {
 
 interface RoomDocument extends Models.Document {
   users: string[];
+  lastMessageUpdatedAt: Date;
+}
+
+interface MessageDocument extends Models.Document {
+  roomId: RoomDocument;
 }
 
 export default class MessageController {
@@ -270,15 +275,25 @@ export default class MessageController {
       const database = new Databases(client);
 
       // Update the message
-      let message = await database.updateDocument(
+      let message = (await database.updateDocument(
         env.APP_DATABASE,
         env.MESSAGES_COLLECTION,
         messageId,
         data
-      );
+      )) as MessageDocument;
 
       if (message?.$id) {
         console.log("message updated");
+        // Update room lastMessageUpdatedAt
+        let room = await database.updateDocument(
+          env.APP_DATABASE,
+          env.ROOMS_COLLECTION,
+          message.roomId.$id,
+          { lastMessageUpdatedAt: new Date() }
+        );
+        room?.$id
+          ? console.log("room lastMessageUpdatedAt updated")
+          : console.log("room lastMessageUpdatedAt not updated");
         res.status(200).json(message);
       } else {
         console.log("message not updated");
